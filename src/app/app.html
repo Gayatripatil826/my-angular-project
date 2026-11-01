@@ -1,0 +1,599 @@
+
+<div class="app-container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="brand">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <h2>EduManage</h2>
+        <span>Student Portal</span>
+      </div>
+    </div>
+
+    <div class="menu-label">MAIN MENU</div>
+
+    <nav>
+      <button
+        [class.active]="activePage === 'Dashboard'"
+        (click)="changePage('Dashboard')">
+        <span>▦</span> Dashboard
+      </button>
+
+      <button
+        [class.active]="activePage === 'Students'"
+        (click)="changePage('Students')">
+        <span>👥</span> Students
+      </button>
+
+      <button
+        [class.active]="activePage === 'Add Student'"
+        (click)="changePage('Add Student')">
+        <span>＋</span> Add Student
+      </button>
+
+      <button
+        [class.active]="activePage === 'Fees'"
+        (click)="changePage('Fees')">
+        <span>₹</span> Fee Management
+      </button>
+
+      <button
+        [class.active]="activePage === 'Attendance'"
+        (click)="changePage('Attendance')">
+        <span>✓</span> Attendance
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="profile-avatar">AD</div>
+      <div>
+        <strong>Administrator</strong>
+        <small>System Manager</small>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <header class="topbar">
+      <div>
+        <h1>{{ activePage }}</h1>
+        <p>Welcome back! Manage your students efficiently.</p>
+      </div>
+
+      <div class="top-actions">
+        <span class="today-label">Academic Year 2026-27</span>
+        <div class="admin-avatar">A</div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section *ngIf="activePage === 'Dashboard'">
+
+      <div class="welcome-card">
+        <div>
+          <span class="welcome-tag">STUDENT MANAGEMENT SYSTEM</span>
+          <h2>Welcome to EduManage!</h2>
+          <p>
+            Manage student records, fees and attendance
+            from one simple dashboard.
+          </p>
+
+          <button
+            class="welcome-button"
+            (click)="changePage('Add Student')">
+            + Add New Student
+          </button>
+        </div>
+
+        <div class="welcome-illustration">🎓</div>
+      </div>
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <p>Total Students</p>
+          <h2>{{ totalStudents }}</h2>
+          <small>Registered students</small>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">✓</div>
+          <p>Active Students</p>
+          <h2>{{ activeStudents }}</h2>
+          <small>Currently enrolled</small>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon orange">◷</div>
+          <p>Inactive Students</p>
+          <h2>{{ inactiveStudents }}</h2>
+          <small>Not currently active</small>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">₹</div>
+          <p>Fees Collected</p>
+          <h2>{{ formatCurrency(collectedFees) }}</h2>
+          <small>Successfully collected</small>
+        </div>
+
+      </div>
+
+      <div class="dashboard-grid">
+
+        <div class="content-card">
+          <div class="card-heading">
+            <div>
+              <h3>Recent Students</h3>
+              <p>Recently registered students</p>
+            </div>
+
+            <button
+              class="text-button"
+              (click)="changePage('Students')">
+              View All →
+            </button>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Course</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let student of students.slice(0, 5)">
+                  <td>
+                    <div class="student-name">
+                      <div class="student-avatar">
+                        {{ student.name.charAt(0) }}
+                      </div>
+                      <div>
+                        <strong>{{ student.name }}</strong>
+                        <small>{{ student.email }}</small>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>{{ student.course }}</td>
+
+                  <td>
+                    <span
+                      class="status"
+                      [ngClass]="student.status === 'Active' ? 'active-status' : 'inactive-status'">
+                      {{ student.status }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="content-card finance-card">
+          <h3>Fee Overview</h3>
+          <p>Student fee collection details</p>
+
+          <div class="fee-info">
+            <span>Total Fees</span>
+            <strong>{{ formatCurrency(totalFees) }}</strong>
+          </div>
+
+          <div class="fee-info collected">
+            <span>Collected Fees</span>
+            <strong>{{ formatCurrency(collectedFees) }}</strong>
+          </div>
+
+          <div class="fee-info pending">
+            <span>Pending Fees</span>
+            <strong>{{ formatCurrency(pendingFees) }}</strong>
+          </div>
+
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="totalFees ? collectedFees / totalFees * 100 : 0">
+            </div>
+          </div>
+
+          <small>
+            {{ totalFees ? (collectedFees / totalFees * 100 | number:'1.0-0') : 0 }}%
+            of total fees collected
+          </small>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STUDENT RECORDS -->
+    <section *ngIf="activePage === 'Students'">
+
+      <div class="content-card">
+
+        <div class="card-heading">
+          <div>
+            <h2>Student Records</h2>
+            <p>View, search, edit and manage student details.</p>
+          </div>
+
+          <button
+            class="primary-button"
+            (click)="changePage('Add Student')">
+            + Add Student
+          </button>
+        </div>
+
+        <div class="filter-row">
+
+          <input
+            type="text"
+            placeholder="Search by name, email or course..."
+            [(ngModel)]="searchText">
+
+          <select [(ngModel)]="selectedFilter">
+            <option value="All">All Students</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Course</th>
+                <th>Year</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let student of filteredStudents">
+
+                <td>#{{ student.id }}</td>
+
+                <td>
+                  <div class="student-name">
+                    <div class="student-avatar">
+                      {{ student.name.charAt(0) }}
+                    </div>
+                    <strong>{{ student.name }}</strong>
+                  </div>
+                </td>
+
+                <td>{{ student.email }}</td>
+                <td>{{ student.course }}</td>
+                <td>{{ student.year }}</td>
+
+                <td>
+                  <span
+                    class="status"
+                    [ngClass]="student.status === 'Active' ? 'active-status' : 'inactive-status'">
+                    {{ student.status }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      class="edit-button"
+                      (click)="editStudent(student)"
+                      title="Edit student">
+                      ✎
+                    </button>
+
+                    <button
+                      class="delete-button"
+                      (click)="deleteStudent(student.id)"
+                      title="Delete student">
+                      🗑
+                    </button>
+                  </div>
+                </td>
+
+              </tr>
+
+              <tr *ngIf="filteredStudents.length === 0">
+                <td colspan="7" class="empty-message">
+                  No student records found.
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <p class="record-count">
+          Showing {{ filteredStudents.length }} of {{ totalStudents }} students
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ADD / EDIT STUDENT -->
+    <section *ngIf="activePage === 'Add Student'">
+
+      <div class="content-card form-card">
+
+        <div class="card-heading">
+          <div>
+            <h2>{{ editingId !== null ? 'Edit Student' : 'Add New Student' }}</h2>
+            <p>Enter the student information below.</p>
+          </div>
+
+          <button class="secondary-button"
+            (click)="changePage('Students')">
+            ← Back to Students
+          </button>
+        </div>
+
+        <form (ngSubmit)="saveStudent()" #studentForm="ngForm">
+
+          <h3 class="form-section-title">Personal Information</h3>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input
+                type="text"
+                name="name"
+                [(ngModel)]="form.name"
+                placeholder="Enter full name"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input
+                type="email"
+                name="email"
+                [(ngModel)]="form.email"
+                placeholder="example@gmail.com"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label>Phone Number *</label>
+              <input
+                type="tel"
+                name="phone"
+                [(ngModel)]="form.phone"
+                placeholder="Enter phone number"
+                pattern="[0-9]{10}"
+                maxlength="10"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label>Course *</label>
+              <select
+                name="course"
+                [(ngModel)]="form.course"
+                required>
+                <option value="" disabled>Select Course</option>
+                <option>Computer Science</option>
+                <option>Information Technology</option>
+                <option>Mechanical Engineering</option>
+                <option>Civil Engineering</option>
+                <option>Business Administration</option>
+                <option>Electronics Engineering</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Academic Year *</label>
+              <select
+                name="year"
+                [(ngModel)]="form.year"
+                required>
+                <option value="" disabled>Select Year</option>
+                <option>First Year</option>
+                <option>Second Year</option>
+                <option>Third Year</option>
+                <option>Final Year</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Joining Date</label>
+              <input
+                type="date"
+                name="joined"
+                [(ngModel)]="form.joined">
+            </div>
+
+          </div>
+
+          <h3 class="form-section-title">Academic & Fee Information</h3>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label>Total Course Fee (₹)</label>
+              <input
+                type="number"
+                name="fee"
+                [(ngModel)]="form.fee"
+                min="0"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label>Paid Amount (₹)</label>
+              <input
+                type="number"
+                name="paid"
+                [(ngModel)]="form.paid"
+                min="0"
+                [max]="form.fee"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label>Attendance (%)</label>
+              <input
+                type="number"
+                name="attendance"
+                [(ngModel)]="form.attendance"
+                min="0"
+                max="100"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label>Student Status</label>
+              <select
+                name="status"
+                [(ngModel)]="form.status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="secondary-button"
+              (click)="resetForm()">
+              Reset
+            </button>
+
+            <button
+              type="submit"
+              class="primary-button"
+              [disabled]="studentForm.invalid">
+              {{ editingId !== null ? 'Update Student' : 'Save Student' }}
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </section>
+
+    <!-- FEE MANAGEMENT -->
+    <section *ngIf="activePage === 'Fees'">
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <div class="stat-icon blue">₹</div>
+          <p>Total Fees</p>
+          <h2>{{ formatCurrency(totalFees) }}</h2>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">✓</div>
+          <p>Collected Fees</p>
+          <h2>{{ formatCurrency(collectedFees) }}</h2>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon orange">◷</div>
+          <p>Pending Fees</p>
+          <h2>{{ formatCurrency(pendingFees) }}</h2>
+        </div>
+
+      </div>
+
+      <div class="content-card">
+        <h2>Student Fee Records</h2>
+        <p>Track fee payments and pending balances.</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Course</th>
+                <th>Total Fee</th>
+                <th>Paid</th>
+                <th>Pending</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let student of students">
+                <td>{{ student.name }}</td>
+                <td>{{ student.course }}</td>
+                <td>{{ formatCurrency(student.fee) }}</td>
+                <td class="paid-text">
+                  {{ formatCurrency(student.paid) }}
+                </td>
+                <td class="pending-text">
+                  {{ formatCurrency(student.fee - student.paid) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section *ngIf="activePage === 'Attendance'">
+
+      <div class="content-card">
+
+        <h2>Student Attendance</h2>
+        <p>Monitor attendance percentage for every student.</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Course</th>
+                <th>Attendance</th>
+                <th>Performance</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let student of students">
+
+                <td>{{ student.name }}</td>
+                <td>{{ student.course }}</td>
+
+                <td>{{ student.attendance }}%</td>
+
+                <td>
+                  <span
+                    class="status"
+                    [ngClass]="student.attendance >= 75 ? 'active-status' : 'inactive-status'">
+                    {{ student.attendance >= 75 ? 'Good' : 'Low Attendance' }}
+                  </span>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>
+      © 2026 EduManage Student Management System. All rights reserved.
+    </footer>
+
+  </main>
+</div>

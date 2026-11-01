@@ -1,0 +1,53 @@
+
+<div class="student-container">
+
+  <h2>Student Management</h2>
+
+  <input
+    type="text"
+    placeholder="Search students..."
+    [value]="searchText"
+    (input)="onSearchChange($any($event.target).value)"
+  >
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Course</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let student of filteredStudents">
+
+        <td>{{ student.id }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.phone }}</td>
+        <td>{{ student.course }}</td>
+        <td>{{ student.status }}</td>
+
+        <td>
+          <button
+            class="delete-btn"
+            (click)="onDeleteStudent(student)">
+            Delete
+          </button>
+        </td>
+
+      </tr>
+
+      <tr *ngIf="filteredStudents.length === 0">
+        <td colspan="7">No students found.</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+</div>
